@@ -26,6 +26,9 @@ int air = 9; //Controls the air pump
 int stir = 8;
 
 
+//This is the analog pin for depth measurement
+int depth = A0; //defines depth based off measurement coming from the sensor
+
 //These are other variables set up for calculations
 int x=0;
 float starttime;
@@ -67,7 +70,7 @@ void setup() {
   delay(5000);
   lcd.clear();
   lcd.setCursor(0,1);
-  //measurevol();
+  measurevol();
   lcd.print(tank);
   measurevol();
   lcd.print(tank);
@@ -77,10 +80,23 @@ void setup() {
 }
 uint8_t i=0;
 
+//This function takes an average of tank volume readings to get a smoothed value when "measurevol();" is used
+void measurevol(){
+  int junk = analogRead(depth);
+  float tank1 = analogRead(depth)*0.421569-28.4559;
+  float tank2 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  float tank3 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  float tank4 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  float tank5 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  float tank6 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  float tank7 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  float tank8 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
+  tank = (tank1 + tank2 + tank3 + tank4 + tank5 + tank6 + tank7 + tank8)/8;
+}
 
 
 
-void fill(int lvl, int air){//check depth and fill until level is 25gal plus stir
+void fill(int lvl, int airadd){//check depth and fill until level is 25gal plus stir
   if (lvl<19){
     digitalWrite(stir, HIGH);//high turns that pin on (if it is set to output), low turns it off
   }
