@@ -16,20 +16,15 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 //These are the digital pin numbers and what they turn on and off
-int en1 = 2; //1 is fill
+int en1 = 2; //stepper function 
 int step1 = 3;
-int dir1 = 4;
-int decantpump = 5; //decants SBR into Effluent Tanks
+int dir1 = 4; //stepper function
+int decantvalve = 5; //decants SBR into Effluent Tanks
 int fillpump = 6; //fills the SBR from the GW tank
-int skimmer =7;
 int air = 9; //Controls the air pump
-int stir = 8;
 
 
-//This is the analog pin for depth measurement
-int depth = A0; //defines depth based off measurement coming from the sensor
-
-//These are other variables set up for calculations
+//These are other variables set up for calculations. Float indicates a number with a decimal. Int indicates a whole number
 int x=0;
 float starttime;
 float realstarttime;
@@ -70,57 +65,27 @@ void setup() {
   delay(5000);
   lcd.clear();
   lcd.setCursor(0,1);
-  measurevol();
-  lcd.print(tank);
-  measurevol();
-  lcd.print(tank);
-  measurevol();
-  lcd.print(tank);
-  measurevol();
+  
 }
 uint8_t i=0;
 
-//This function takes an average of tank volume readings to get a smoothed value when "measurevol();" is used
-void measurevol(){
-  int junk = analogRead(depth);
-  float tank1 = analogRead(depth)*0.421569-28.4559;
-  float tank2 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  float tank3 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  float tank4 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  float tank5 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  float tank6 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  float tank7 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  float tank8 = analogRead(depth)*0.421569-28.4559;//*0.438596-32.7018;
-  tank = (tank1 + tank2 + tank3 + tank4 + tank5 + tank6 + tank7 + tank8)/8;
-}
 
-
-
-void fill(int lvl, int airadd){//check depth and fill until level is 25gal plus stir
-  if (lvl<19){
-    digitalWrite(stir, HIGH);//high turns that pin on (if it is set to output), low turns it off
-  }
+void fill(float duration){ //fill by time
+  duration=duration*60*1000;
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("FILL ");
+  lcd.print("Fill ");
   lcd.setBacklight(TEAL);
-  measurevol();
+  float starttime = millis();
+  delay(100);
+  while (((millis()-starttime)<duration)){
+    digitalWrite(fillpump, HIGH); //turns on the pump to fill the SBR
+    int timedisplay = round((duration-(millis()-starttime))/60/1000);
+    delay(10000);
   lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal");
-  DateTime now = rtc.now();
-  if (airadd == 1){
-    digitalWrite(air,HIGH);
-  }
-    while (tank<lvl){
-      digitalWrite(fillpump, HIGH);
-      measurevol();
-      lcd.setCursor(0,1);
-      lcd.print(tank);lcd.print("gal");
-      delay(15000);
-    }
-    digitalWrite(fillpump, LOW);
-    digitalWrite(stir, LOW);
-    digitalWrite(air, LOW);
+  lcd.print(timedisplay);lcd.print("min  ");} 
+}
+  digitalWrite(fillpump, LOW); //turns off the pump
 }
 
 void periodicaeration(float ontime){//on for 15 min freq is 60 min
@@ -134,9 +99,8 @@ void periodicaeration(float ontime){//on for 15 min freq is 60 min
   int timedisplay = round((ontime-(current-tt))/60);
   while ((current-tt) < ontime){
     timedisplay = round((ontime-(current-tt))/60);
-    measurevol();
-    lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal  ");
+ 
+ lcd.setCursor(0,1);
   lcd.print(timedisplay);
   lcd.print("min");
   delay(1000);
@@ -147,41 +111,33 @@ void periodicaeration(float ontime){//on for 15 min freq is 60 min
 digitalWrite(air, LOW);
 digitalWrite(stir, LOW);  
 }
-void aeration(float airduration, int lvl){//duration in min check depth and keep air on and pumps off for time period
-  airduration=airduration*60*1000;
+void aeration(float airduration){//duration in min check depth and keep air on and pumps off for time period
+  airduration=airduration*60*1000; //converting the number from minutes to milliseconds
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Aeration ");
   lcd.setBacklight(GREEN);
-  measurevol();
-  lcd.setCursor(0,1);
-  lcd.print(tank);
   float starttime = millis();
   delay(100);
-  while (((millis()-starttime)<airduration)&&(tank>lvl)){  //2 min
+  while (((millis()-starttime)<airduration)){  
     digitalWrite(air, HIGH);
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
-    measurevol();
     lcd.setCursor(0,1);
-    lcd.print(tank);lcd.print("gal  ");
     lcd.print(timedisplay);lcd.print("min  ");
     delay(20000);}
     digitalWrite(air, LOW);
 }
-void thirtysecaeration(float airduration, int lvl){//duration in min check depth and keep air on and pumps off for time period
-  airduration=airduration*60*1000;
+void thirtysecaeration(float airduration){//duration in min check depth and keep air on and pumps off for time period
+  airduration=airduration*60*1000; //converting the number from minutes to milliseconds
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("30Aeration ");
   lcd.setBacklight(GREEN);
-  measurevol();
-  lcd.setCursor(0,1);
-  lcd.print(tank);
   float starttime = millis();
   delay(100);
-  while (((millis()-starttime)<airduration)&&(tank>lvl)){  //2 min
+  while (((millis()-starttime)<airduration)){  
     digitalWrite(air, HIGH);
-    delay(30000);
+    delay(30000); //air on for 30 seconds
     digitalWrite(air, LOW);
     delay(30000);
     delay(30000);
@@ -190,30 +146,26 @@ void thirtysecaeration(float airduration, int lvl){//duration in min check depth
     delay(30000);
     delay(30000);
     delay(30000);
-    delay(30000);
+    delay(30000); //air off for 4 minutes
 
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
-    measurevol();
     lcd.setCursor(0,1);
-    lcd.print(tank);lcd.print("gal  ");
     lcd.print(timedisplay);lcd.print("min  ");
     //delay(20000);
     }
     digitalWrite(air, LOW);
 }
-void halftimeair(float airduration, int lvl){//duration in min check depth and keep air on and pumps off for time period
-  airduration=airduration*60*1000;
+void halftimeair(float airduration){//duration in min check depth and keep air on and pumps off for time period
+  airduration=airduration*60*1000; //converting the number from minutes to milliseconds
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("halftimeAir ");
   lcd.setBacklight(GREEN);
-  measurevol();
-  lcd.setCursor(0,1);
-  lcd.print(tank);
   float starttime = millis();
   delay(100);
-  while (((millis()-starttime)<airduration)&&(tank>lvl)){  //2 min
+  while (((millis()-starttime)<airduration)){  
     digitalWrite(air, HIGH);
+    delay(30000); 
     delay(30000);
     delay(30000);
     delay(30000);
@@ -222,8 +174,7 @@ void halftimeair(float airduration, int lvl){//duration in min check depth and k
     delay(30000);
     delay(30000);
     delay(30000);
-    delay(30000);
-    delay(30000);
+    delay(30000); //air on for 5 minutes
     digitalWrite(air, LOW);
     delay(30000);
     delay(30000);
@@ -234,12 +185,10 @@ void halftimeair(float airduration, int lvl){//duration in min check depth and k
     delay(30000);
     delay(30000);
     delay(30000);
-    delay(30000);
+    delay(30000); //air off for 5 minutes
 
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
-    measurevol();
     lcd.setCursor(0,1);
-    lcd.print(tank);lcd.print("gal  ");
     lcd.print(timedisplay);lcd.print("min  ");
     //delay(20000);
     }
@@ -251,12 +200,9 @@ void oneonthreeoffair(float airduration, int lvl){//duration in min check depth 
   lcd.setCursor(0,0);
   lcd.print("halftimeAir ");
   lcd.setBacklight(GREEN);
-  measurevol();
-  lcd.setCursor(0,1);
-  lcd.print(tank);
   float starttime = millis();
   delay(100);
-  while (((millis()-starttime)<airduration)&&(tank>lvl)){  //2 min
+  while (((millis()-starttime)<airduration)&&(tank>lvl)){  
     digitalWrite(air, HIGH);
     delay(30000);
     delay(30000);
@@ -268,75 +214,58 @@ void oneonthreeoffair(float airduration, int lvl){//duration in min check depth 
     delay(30000);
     delay(30000);
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
-    measurevol();
+    
     lcd.setCursor(0,1);
-    lcd.print(tank);lcd.print("gal  ");
     lcd.print(timedisplay);lcd.print("min  ");
     //delay(20000);
     }
     digitalWrite(air, LOW);
 }
-void settle(float duration, int lvl){//everything off just timer
+void settle(float duration){//everything off just timer
   duration=duration*60*1000;
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Settle ");
   lcd.setBacklight(YELLOW);
-  measurevol();
   lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal  ");
   float starttime = millis();
   delay(100);
-  while (((millis()-starttime)<duration)&&(tank>lvl)){
+  while (((millis()-starttime)<duration)){
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
     delay(10000);
-    measurevol();
   lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal  ");
-  lcd.print(timedisplay);lcd.print("min  ");} //2 min
+  lcd.print(timedisplay);lcd.print("min  ");} 
 }
 
-void decant(int level){ // empty through decant pump checking volume
+void decant(float duration){ // decant by time
+  duration=duration*60*1000;
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Decant ");
   lcd.setBacklight(RED);
-  measurevol();
-  lcd.setCursor(0,1);
-  lcd.print(tank);
   float starttime = millis();
-  digitalWrite(decantpump, HIGH);
-  delay(2000);
-  digitalWrite(decantpump, LOW);
-  delay(1000);
-  digitalWrite(decantpump, HIGH);
-  delay(2000);
-  digitalWrite(decantpump, LOW);
-  delay(1000);
- while (tank>level){
-    digitalWrite(decantpump, HIGH);
-    measurevol();
-    lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal  ");
-  delay(3000);}
-    digitalWrite(decantpump, LOW);
+  delay(100);
+  while (((millis()-starttime)<duration)){
+    digitalWrite(decantvalve, HIGH); //opens the ball valve
+    int timedisplay = round((duration-(millis()-starttime))/60/1000);
+    delay(10000);
+  lcd.setCursor(0,1);
+  lcd.print(timedisplay);lcd.print("min  ");} 
 }
-void rest(float longt){ //everything off except maybe stir
+  digitalWrite(decantvalve, LOW); //closes the ball valve
+  
+}
+void rest(float longt){ //everything off 
   longt=longt*60*1000;
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("REST ");
   lcd.setBacklight(VIOLET);
-  measurevol();
-  lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal  ");
   float starttime = millis();
   delay(100);
    while ((millis()-starttime)<longt){
     float timedisplay = round((longt-(millis()-starttime))/60/1000);
-     measurevol();
      lcd.setCursor(0,1);
-  lcd.print(tank);lcd.print("gal  ");
   lcd.print(timedisplay);lcd.print("min  ");
     delay(1000);}
     digitalWrite(stir, LOW);
@@ -362,13 +291,13 @@ void stepper(int num, int motor, int direct){
 //calls stepper function above to remove sludge automatically
 void sludgeremoval(){
   stepper(6400,1,2);//fills up tube. revolutions, 1st motor, "empty" dir
-  stepper(1875,1,2);//empties(2500 steps, now 1875). revolutions, 1st motor, "empty" dir 2500 steps = 1 gal per week. 1875=.75 gal/wk
+  stepper(1875,1,2);//empties into sludge container (2500 steps, now 1875). revolutions, 1st motor, "empty" dir 2500 steps = 1 gal per week. 1875=.75 gal/wk
   stepper(6400,1,1);//empty tube back into sbr. revolutions, 1st motor, "fill" dir
 }
 
 ////// This is what happens when resting //////
 void weekend(){
-  aeration(5, 4);
+  aeration(5);
   rest(50);
   sludgeremoval();
 }
@@ -377,66 +306,22 @@ void weekend(){
 void normalsequence(){//10 hrs
   DateTime now = rtc.now();
   realstarttime = now.unixtime();
-  fill(21,1);
+  fill(insert minutes to fill);
   now = rtc.now();
   delay(2000);
-  thirtysecaeration(120, 19);
+  thirtysecaeration(60);
   delay(2000);
-  oneonthreeoffair(60,19);
+  oneonthreeoffair(60);
   delay(2000);
-  halftimeair(60,19);
+  halftimeair(60);
   delay(2000);
-  aeration(60,19);
+  aeration(60);
   delay(2000);
-  settle(180, 19);
+  settle(120);
   delay(2000);
-  decant(6);
+  decant(insert minutes to decant);
   delay(2000);
 }
-//NOT USED//
-//this was for a slow fillup to avoid bubbling over
-void loading(int h){//takes 1 hr to fill before continuing
-   DateTime now = rtc.now();
-  begintime = now.unixtime();
-   measurevol();
-   fill(h,1);
-   periodicaeration(15);
-   now = rtc.now();
-   float current = now.unixtime();
-    while (current-begintime<3600){//1hr chill
-    if (h<20){
-    digitalWrite(stir, HIGH);
-    }
-    now = rtc.now();
-    current = now.unixtime();
-    delay(15000);
-    lcd.setCursor(0,0);
-    lcd.print("Loading Delay       ");
-    int timedisplay = round((3600-(current-begintime))/60);
-    measurevol();
-    lcd.setCursor(0,1);
-    lcd.print(tank);lcd.print("gal  ");
-    lcd.print(timedisplay);
-    lcd.print("min  ");
-  }
-  digitalWrite(stir, LOW);
-}
-
-//NOT USED//
-//this was for a slow fillup to avoid bubbling over
-void fillup(){
-  loading(7);//12 times for 12 hours
-  loading(9);
-  loading(11);
-  loading(13);
-  loading(15);
-  loading(16);
-  loading(17);
-  loading(18);
-  loading(20);
-  loading(21);
-}
-
 
 // put your main code here, to run repeatedly:
 void loop() {
@@ -448,7 +333,6 @@ void loop() {
   lcd.print(daysOfTheWeek[now.dayOfTheWeek()]);
   delay(100);
   lcd.setCursor(0,1);
-  lcd.print(tank);
   while (x<1){//////////////If something gets off and you want to run a small part of the code put it in this while loop
    /////////////////Everything in here only runs once/////////////////////
    //sludgeremoval();
