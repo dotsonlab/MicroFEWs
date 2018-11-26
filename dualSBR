@@ -362,7 +362,7 @@ void stepper(int num, int motor, int direct){
 //calls stepper function above to remove sludge automatically
 void sludgeremoval(){
   stepper(6400,1,2);//fills up tube. revolutions, 1st motor, "empty" dir
-  stepper(2500,1,2);//empties(2500 steps equivalent to about 1 gal/wk). revolutions, 1st motor, "empty" dir
+  stepper(1875,1,2);//empties(2500 steps, now 1875). revolutions, 1st motor, "empty" dir 2500 steps = 1 gal per week. 1875=.75 gal/wk
   stepper(6400,1,1);//empty tube back into sbr. revolutions, 1st motor, "fill" dir
 }
 
@@ -377,7 +377,7 @@ void weekend(){
 void normalsequence(){//10 hrs
   DateTime now = rtc.now();
   realstarttime = now.unixtime();
-  fillplusair(21,1);
+  fill(21,1);
   now = rtc.now();
   delay(2000);
   thirtysecaeration(120, 19);
@@ -455,24 +455,28 @@ void loop() {
    //aeration(60,17);
    //settle(50, 19);//delay(1000);
    //decant(6);//loading();
-    normalsequence();
+    //normalsequence();
+    //settle(180,19);
+    //delay(2000);
+ // decant(6);
+ // delay(2000);
     x++;}
   
     //this section checks what day it is then starts the sequence if time of day is between these hours
   if (now.dayOfTheWeek()== 1){//"Monday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}
   if (now.dayOfTheWeek()== 2){//"Tuesday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}
   if (now.dayOfTheWeek()== 3){//"Wednesday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}
   if (now.dayOfTheWeek()== 4){//"thursday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}
   if (now.dayOfTheWeek()== 5){//"Friday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}
   if (now.dayOfTheWeek()== 6){//"Saturday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}//fillplusair(21,1);thirtysecaeration(100,10);}}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}//fillplusair(21,1);thirtysecaeration(100,10);}}
   if (now.dayOfTheWeek()== 0){//"Sunday"
-    if (now.hour()>5 && now.hour()<7){normalsequence();}}//weekend();}
+    if (now.hour()>6 && now.hour()<8){normalsequence();}}//weekend();}
   delay(20000);
   ////This weekend function is poorly named but means what happens before the sequence is triggered and after it is done
   weekend();}
