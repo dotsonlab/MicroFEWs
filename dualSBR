@@ -17,7 +17,7 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 
 //These are the digital pin numbers and what they turn on and off
 int en1 = 2; //stepper function 
-int step1 = 3;
+int step1 = 3; //stepper function
 int dir1 = 4; //stepper function
 int decantvalve = 5; //decants SBR into Effluent Tanks
 int fillpump = 6; //fills the SBR from the GW tank
@@ -35,14 +35,11 @@ float airtimer;
 //This is the setup section that the code runs through once before doing the "loop" section over and over
 void setup() {
   pinMode(en1, OUTPUT);
-  pinMode(decantpump, OUTPUT);
+  pinMode(decantvalve, OUTPUT);
   pinMode(step1, OUTPUT);
   pinMode(fillpump, OUTPUT);
   pinMode(dir1, OUTPUT);
-  pinMode(skimmer, OUTPUT);
   pinMode(air, OUTPUT);
-  pinMode(stir, OUTPUT);
-  pinMode(depth, INPUT);
   digitalWrite(en1, HIGH);
   lcd.begin(16, 2);
    if (! rtc.begin()) {
@@ -325,46 +322,7 @@ void normalsequence(){
   delay(2000);
   idle();
   delay(2000);
-  
-  DateTime now = rtc.now();
-  realstarttime = now.unixtime();
-  fill(insert minutes to fill);
-  now = rtc.now();
-  delay(2000);
-  thirtysecaeration(60);
-  delay(2000);
-  oneonthreeoffair(60);
-  delay(2000);
-  halftimeair(60);
-  delay(2000);
-  aeration(60);
-  delay(2000);
-  settle(120);
-  delay(2000);
-  decant(insert minutes to decant);
-  delay(2000);
-  idle();
-  delay(2000);
-  
-  DateTime now = rtc.now();
-  realstarttime = now.unixtime();
-  fill(insert minutes to fill);
-  now = rtc.now();
-  delay(2000);
-  thirtysecaeration(60);
-  delay(2000);
-  oneonthreeoffair(60);
-  delay(2000);
-  halftimeair(60);
-  delay(2000);
-  aeration(60);
-  delay(2000);
-  settle(120);
-  delay(2000);
-  decant(insert minutes to decant);
-  delay(2000);
-  idle();
-  delay(2000);
+ 
 }
 
 // put your main code here, to run repeatedly:
@@ -380,7 +338,9 @@ void loop() {
    /////////////////Everything in here only runs once/////////////////////
     x++;}
   
-  //this section triggers normal sequence at midnight
+  //this section triggers the sequence at midnight
   if(now.hour() == 00 && now.minute() == 00){
+      for (int i = 0; i < 3; i++){
       normalsequence();
+      }
   }
