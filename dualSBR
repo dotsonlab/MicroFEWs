@@ -111,7 +111,7 @@ void periodicaeration(float ontime){//on for 15 min freq is 60 min
 digitalWrite(air, LOW);
 digitalWrite(stir, LOW);  
 }
-void aeration(float airduration){//duration in min check depth and keep air on and pumps off for time period
+void aeration(float airduration){//duration in min keep air on and pumps off for time period
   airduration=airduration*60*1000; //converting the number from minutes to milliseconds
   lcd.clear();
   lcd.setCursor(0,0);
@@ -127,7 +127,7 @@ void aeration(float airduration){//duration in min check depth and keep air on a
     delay(20000);}
     digitalWrite(air, LOW);
 }
-void thirtysecaeration(float airduration){//duration in min check depth and keep air on and pumps off for time period
+void thirtysecaeration(float airduration){//duration in min keep air on and pumps off for time period
   airduration=airduration*60*1000; //converting the number from minutes to milliseconds
   lcd.clear();
   lcd.setCursor(0,0);
@@ -296,14 +296,16 @@ void sludgeremoval(){
 }
 
 ////// This is what happens when resting //////
-void weekend(){
+void idle(){
   aeration(5);
-  rest(50);
-  sludgeremoval();
+  rest(55);
+  aeration(5);
+  rest(55);
+  
 }
 
 ///////// THIS IS THE SEQUENCE THAT MATTERS /////////
-void normalsequence(){//10 hrs
+void normalsequence(){
   DateTime now = rtc.now();
   realstarttime = now.unixtime();
   fill(insert minutes to fill);
@@ -321,12 +323,53 @@ void normalsequence(){//10 hrs
   delay(2000);
   decant(insert minutes to decant);
   delay(2000);
+  idle();
+  delay(2000);
+  
+  DateTime now = rtc.now();
+  realstarttime = now.unixtime();
+  fill(insert minutes to fill);
+  now = rtc.now();
+  delay(2000);
+  thirtysecaeration(60);
+  delay(2000);
+  oneonthreeoffair(60);
+  delay(2000);
+  halftimeair(60);
+  delay(2000);
+  aeration(60);
+  delay(2000);
+  settle(120);
+  delay(2000);
+  decant(insert minutes to decant);
+  delay(2000);
+  idle();
+  delay(2000);
+  
+  DateTime now = rtc.now();
+  realstarttime = now.unixtime();
+  fill(insert minutes to fill);
+  now = rtc.now();
+  delay(2000);
+  thirtysecaeration(60);
+  delay(2000);
+  oneonthreeoffair(60);
+  delay(2000);
+  halftimeair(60);
+  delay(2000);
+  aeration(60);
+  delay(2000);
+  settle(120);
+  delay(2000);
+  decant(insert minutes to decant);
+  delay(2000);
+  idle();
+  delay(2000);
 }
 
 // put your main code here, to run repeatedly:
 void loop() {
   DateTime now = rtc.now();
-  //daysOfTheWeek[now.dayOfTheWeek()
   float current = now.unixtime();
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -335,32 +378,9 @@ void loop() {
   lcd.setCursor(0,1);
   while (x<1){//////////////If something gets off and you want to run a small part of the code put it in this while loop
    /////////////////Everything in here only runs once/////////////////////
-   //sludgeremoval();
-   //aeration(60,17);
-   //settle(50, 19);//delay(1000);
-   //decant(6);//loading();
-    //normalsequence();
-    //settle(180,19);
-    //delay(2000);
- // decant(6);
- // delay(2000);
     x++;}
   
-    //this section checks what day it is then starts the sequence if time of day is between these hours
-  if (now.dayOfTheWeek()== 1){//"Monday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}
-  if (now.dayOfTheWeek()== 2){//"Tuesday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}
-  if (now.dayOfTheWeek()== 3){//"Wednesday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}
-  if (now.dayOfTheWeek()== 4){//"thursday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}
-  if (now.dayOfTheWeek()== 5){//"Friday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}
-  if (now.dayOfTheWeek()== 6){//"Saturday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}//fillplusair(21,1);thirtysecaeration(100,10);}}
-  if (now.dayOfTheWeek()== 0){//"Sunday"
-    if (now.hour()>6 && now.hour()<8){normalsequence();}}//weekend();}
-  delay(20000);
-  ////This weekend function is poorly named but means what happens before the sequence is triggered and after it is done
-  weekend();}
+  //this section triggers normal sequence at midnight
+  if(now.hour() == 00 && now.minute() == 00){
+      normalsequence();
+  }
