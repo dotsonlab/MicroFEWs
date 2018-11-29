@@ -45,7 +45,10 @@ void setup() {
    if (! rtc.begin()) {
      lcd.print("Couldn't find RTC");
     while (1);
-  }
+ Alarm.alarmRepeat(0,0,0, normalsequence)
+ Alarm.alarmRepeat(8,0,0, normalsequence)
+ Alarm.alarmRepeat(16,0,0, normalsequence)
+ }
 
   if (rtc.lostPower()) {
     lcd.print("RTC lost power, lets set the time!");
@@ -59,7 +62,7 @@ void setup() {
   // this library has been optimized a bit and we're proud of it :)
   lcd.print("start!");
   lcd.setBacklight(WHITE);
-  delay(5000);
+  Alarm.delay(5000);
   lcd.clear();
   lcd.setCursor(0,1);
   
@@ -74,11 +77,11 @@ void fill(float duration){ //fill by time
   lcd.print("Fill ");
   lcd.setBacklight(TEAL);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<duration)){
     digitalWrite(fillpump, HIGH); //turns on the pump to fill the SBR
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
-    delay(10000);
+    Alarm.delay(1000);
   lcd.setCursor(0,1);
   lcd.print(timedisplay);lcd.print("min  ");} 
 }
@@ -100,7 +103,7 @@ void periodicaeration(float ontime){//on for 15 min freq is 60 min
  lcd.setCursor(0,1);
   lcd.print(timedisplay);
   lcd.print("min");
-  delay(1000);
+  Alarm.delay(1000);
   digitalWrite(air, HIGH);
   now = rtc.now();
   current = now.unixtime();
@@ -115,13 +118,13 @@ void aeration(float airduration){//duration in min keep air on and pumps off for
   lcd.print("Aeration ");
   lcd.setBacklight(GREEN);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<airduration)){  
     digitalWrite(air, HIGH);
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
     lcd.setCursor(0,1);
     lcd.print(timedisplay);lcd.print("min  ");
-    delay(20000);}
+   }
     digitalWrite(air, LOW);
 }
 void thirtysecaeration(float airduration){//duration in min keep air on and pumps off for time period
@@ -131,24 +134,23 @@ void thirtysecaeration(float airduration){//duration in min keep air on and pump
   lcd.print("30Aeration ");
   lcd.setBacklight(GREEN);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<airduration)){  
     digitalWrite(air, HIGH);
-    delay(30000); //air on for 30 seconds
+    Alarm.delay(30000); //air on for 30 seconds
     digitalWrite(air, LOW);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000); //air off for 4 minutes
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000); //air off for 4 minutes
 
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
     lcd.setCursor(0,1);
     lcd.print(timedisplay);lcd.print("min  ");
-    //delay(20000);
     }
     digitalWrite(air, LOW);
 }
@@ -159,35 +161,35 @@ void halftimeair(float airduration){//duration in min check depth and keep air o
   lcd.print("halftimeAir ");
   lcd.setBacklight(GREEN);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<airduration)){  
     digitalWrite(air, HIGH);
-    delay(30000); 
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000); //air on for 5 minutes
+    Alarm.delay(30000); 
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000); //air on for 5 minutes
     digitalWrite(air, LOW);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000); //air off for 5 minutes
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000); //air off for 5 minutes
 
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
     lcd.setCursor(0,1);
     lcd.print(timedisplay);lcd.print("min  ");
-    //delay(20000);
+  
     }
     digitalWrite(air, LOW);
 }
@@ -198,23 +200,22 @@ void oneonthreeoffair(float airduration, int lvl){//duration in min check depth 
   lcd.print("halftimeAir ");
   lcd.setBacklight(GREEN);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<airduration)&&(tank>lvl)){  
     digitalWrite(air, HIGH);
-    delay(30000);
-    delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
     digitalWrite(air, LOW);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
-    delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
+    Alarm.delay(30000);
     int timedisplay = round((airduration-(millis()-starttime))/60/1000);
     
     lcd.setCursor(0,1);
     lcd.print(timedisplay);lcd.print("min  ");
-    //delay(20000);
     }
     digitalWrite(air, LOW);
 }
@@ -226,10 +227,10 @@ void settle(float duration){//everything off just timer
   lcd.setBacklight(YELLOW);
   lcd.setCursor(0,1);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<duration)){
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
-    delay(10000);
+    Alarm.delay(10000);
   lcd.setCursor(0,1);
   lcd.print(timedisplay);lcd.print("min  ");} 
 }
@@ -241,11 +242,11 @@ void decant(float duration){ // decant by time
   lcd.print("Decant ");
   lcd.setBacklight(RED);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
   while (((millis()-starttime)<duration)){
     digitalWrite(decantvalve, HIGH); //opens the ball valve
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
-    delay(10000);
+    Alarm.delay(10000);
   lcd.setCursor(0,1);
   lcd.print(timedisplay);lcd.print("min  ");} 
 }
@@ -259,12 +260,12 @@ void rest(float longt){ //everything off
   lcd.print("REST ");
   lcd.setBacklight(VIOLET);
   float starttime = millis();
-  delay(100);
+  Alarm.delay(100);
    while ((millis()-starttime)<longt){
     float timedisplay = round((longt-(millis()-starttime))/60/1000);
      lcd.setCursor(0,1);
   lcd.print(timedisplay);lcd.print("min  ");
-    delay(1000);}
+    //Alarm.delay(1000);}
     digitalWrite(stir, LOW);
 }
 //This is a general stepper function that can be used for any stepper attached
@@ -277,9 +278,9 @@ void stepper(int num, int motor, int direct){
         digitalWrite(dir1, LOW);}// fill
     for (int i=0; i<num; i++){
       digitalWrite(step1, HIGH);
-      delay(3);
+      Alarm.delay(3);
       digitalWrite(step1, LOW);
-      delay(3);
+      Alarm.delay(3);
   }
   digitalWrite(en1, HIGH);
 }
@@ -307,23 +308,24 @@ void normalsequence(){
   realstarttime = now.unixtime();
   fill(insert minutes to fill);
   now = rtc.now();
-  delay(2000);
+  Alarm.delay(2000);
   thirtysecaeration(60);
-  delay(2000);
+  Alarm.delay(2000);
   oneonthreeoffair(60);
-  delay(2000);
+  Alarm.delay(2000);
   halftimeair(60);
-  delay(2000);
+  Alarm.delay(2000);
   aeration(60);
-  delay(2000);
+  Alarm.delay(2000);
   settle(120);
-  delay(2000);
+  Alarm.delay(2000);
   decant(insert minutes to decant);
-  delay(2000);
+  Alarm.delay(2000);
   idle();
-  delay(2000);
+  Alarm.delay(2000);
  
 }
+
 
 // put your main code here, to run repeatedly:
 void loop() {
@@ -332,15 +334,10 @@ void loop() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(daysOfTheWeek[now.dayOfTheWeek()]);
-  delay(100);
+  Alarm.delay(100);
   lcd.setCursor(0,1);
   while (x<1){//////////////If something gets off and you want to run a small part of the code put it in this while loop
    /////////////////Everything in here only runs once/////////////////////
     x++;}
-  
-  //this section triggers the sequence at midnight
-  if(now.hour() == 00 && now.minute() == 00){
-      for (int i = 0; i < 3; i++){
-      normalsequence();
-      }
+
   }
