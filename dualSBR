@@ -342,4 +342,10 @@ void loop() {
   decant(2); 
  x++;}
 
+
+//this section triggers the sequence at midnight
+ if(now.hour() == 00 && now.minute() == 00){
+      for (int i = 0; i < 3; i++){
+      normalsequence();
+      }
   }
