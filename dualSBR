@@ -19,8 +19,9 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 int en1 = 2; //stepper function 
 int step1 = 3; //stepper function
 int dir1 = 4; //stepper function
-int decantvalve = 5; //decants SBR into Effluent Tanks
-int fillpump = 6; //fills the SBR from the GW tank
+int fillpump1 = 5; //fills the SBR from the GW tank, formally decant pump
+int fillpump2 = 6; //fills the SBR from the GW tank
+int decantvalve1 = 8;
 int air = 9; //Controls the air pump
 
 
@@ -244,7 +245,7 @@ void decant(float duration){ // decant by time
   float starttime = millis();
   Alarm.delay(100);
   while (((millis()-starttime)<duration)){
-    digitalWrite(decantvalve, HIGH); //opens the ball valve
+    digitalWrite(decantvalve1, HIGH); //opens the ball valve
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
     Alarm.delay(10000);
   lcd.setCursor(0,1);
@@ -338,6 +339,7 @@ void loop() {
   lcd.setCursor(0,1);
   while (x<1){//////////////If something gets off and you want to run a small part of the code put it in this while loop
    /////////////////Everything in here only runs once/////////////////////
-    x++;}
+  decant(2); 
+ x++;}
 
   }
