@@ -19,9 +19,8 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 int en1 = 2; //stepper function 
 int step1 = 3; //stepper function
 int dir1 = 4; //stepper function
-int fillpump1 = 5; //fills the SBR from the GW tank, formally decant pump
-int fillpump2 = 6; //fills the SBR from the GW tank
-int decantvalve1 = 8;
+int decantvalves = 5; //opens the decant valves
+int fillpumps = 6; //turns on masterflex to fill SBR tanks
 int air = 9; //Controls the air pump
 
 
@@ -80,13 +79,13 @@ void fill(float duration){ //fill by time
   float starttime = millis();
   Alarm.delay(100);
   while (((millis()-starttime)<duration)){
-    digitalWrite(fillpump, HIGH); //turns on the pump to fill the SBR
+    digitalWrite(fillpumps, HIGH); //turns on the pump to fill the SBR
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
     Alarm.delay(1000);
   lcd.setCursor(0,1);
   lcd.print(timedisplay);lcd.print("min  ");} 
 }
-  digitalWrite(fillpump, LOW); //turns off the pump
+  digitalWrite(fillpumps, LOW); //turns off the pump
 }
 
 void periodicaeration(float ontime){//on for 15 min freq is 60 min
@@ -245,13 +244,13 @@ void decant(float duration){ // decant by time
   float starttime = millis();
   Alarm.delay(100);
   while (((millis()-starttime)<duration)){
-    digitalWrite(decantvalve1, HIGH); //opens the ball valve
+    digitalWrite(decantvalves, HIGH); //opens the ball valves
     int timedisplay = round((duration-(millis()-starttime))/60/1000);
     Alarm.delay(10000);
   lcd.setCursor(0,1);
   lcd.print(timedisplay);lcd.print("min  ");} 
 }
-  digitalWrite(decantvalve, LOW); //closes the ball valve
+  digitalWrite(decantvalves, LOW); //closes the ball valves
   
 }
 void rest(float longt){ //everything off 
